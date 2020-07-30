@@ -39,7 +39,7 @@ func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
 func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
-    body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+    body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 
     if err := r.Body.Close(); err != nil {
         panic(err)
