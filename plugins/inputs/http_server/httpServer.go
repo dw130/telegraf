@@ -3,8 +3,8 @@ package http_server
 import (
 	"sync"
 	"fmt"
-	"time"
-	"net"
+	//"time"
+	//"net"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"github.com/influxdata/telegraf"
@@ -35,13 +35,13 @@ func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 }
 
 
-func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request) {
+func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	params := httprouter.ParamsFromContext(r.Context())
 	fmt.Printf("params**%+v\n",params)
 }
 
 
-func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request) {
+func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	params := httprouter.ParamsFromContext(r.Context())
 	fmt.Printf("params**%+v\n",params)
 }
