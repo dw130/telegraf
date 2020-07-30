@@ -57,7 +57,7 @@ func init() {
 		fmt.Printf("**************1**********************\n")
 		router.POST("/goreplay", t.Goreplay)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
-		http.ListenAndServe(":8080", router)
+		go http.ListenAndServe(":8080", router)
 		fmt.Printf("**************2**********************\n")
 		return t
 	})
