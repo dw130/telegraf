@@ -105,6 +105,8 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
         panic(err)
     }
 
+    fmt.Fprint(w, "")
+    
     strList := strings.Split(string(body)," ")
     if len(strList) < 3 {
     	fmt.Printf( "*catch wrong metric:%v\n", string(body) )
