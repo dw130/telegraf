@@ -50,6 +50,7 @@ func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 				acc.AddGauge(data.mm, data.fields, data.tags, nn)
 
     		default:
+    			fmt.Printf("********default**************\n")
     			break
 		}
 	}
