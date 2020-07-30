@@ -79,10 +79,15 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     tags := map[string]string{
     	"app_name": ps.ByName("app"),
     	"app_id": ps.ByName("appid"),
-    	"thread": ps.ByName("ti"),
+    	//"thread": ps.ByName("ti"),
     }
 
-    if ss != ps.ByName("app") {
+    th := ps.ByName("ti")
+    if th != "" {
+    	tags["thread"] = th
+    }
+
+    if ss != ps.ByName("app") && ss != "" {
     	tags["sevice_name"] = ss
     }
 
