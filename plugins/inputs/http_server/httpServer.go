@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"io"
+	"strings"
 	//"time"
 	//"net"
 	"net/http"
@@ -50,6 +51,9 @@ func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprout
 
 
 func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+    w.WriteHeader(http.StatusOk)
+
     region := ps.ByName("region")
     ti := ps.ByName("ti")
     ss := ps.ByName("ss")
@@ -64,7 +68,18 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
         panic(err)
     }
 
-	fmt.Printf("params**%+v\n",string(body))
+    strList := strings.Split(string(body)," ",-1)
+    if len(strList) < 3 {
+    	fmt.Printf( "*catch wrong metric:%v\n", string(body) )
+    	return
+    }
+    metric := strings.TrimRight(strList[0])
+
+	val, _ := strconv.ParseFloat(strList[1], 64)
+
+	tt, _ := strconv.ParseInt(strList[2], 10, 64)
+
+	fmt.Printf("metric:%+v   val:%v time:\n",metric,val,tt)
 }
 
 
