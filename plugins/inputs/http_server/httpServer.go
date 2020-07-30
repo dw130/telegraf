@@ -41,22 +41,22 @@ func (_ *HttpServer) SampleConfig() string {
 
 func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
-	fmt.Printf("**begin gather*%v**\n", len(s.bufCh)  )
+	//fmt.Printf("**begin gather*%v**\n", len(s.bufCh)  )
 
 L:
 	for {
 		select {
 			case data := <-s.bufCh:
 				nn := time.Unix(data.times / 1000 , 0)
-				fmt.Printf("data:%+v  nn:%v\n",data,nn)
+				//fmt.Printf("data:%+v  nn:%v\n",data,nn)
 				acc.AddGauge(data.mm, data.fields, data.tags, nn)
 
     		default:
-    			fmt.Printf("********default**************\n")
+    			//fmt.Printf("********default**************\n")
     			break L
 		}
 	}
-	fmt.Printf("**end gather***\n")
+	//fmt.Printf("**end gather***\n")
 	return nil
 }
 
