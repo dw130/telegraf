@@ -52,8 +52,19 @@ func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprout
 func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
     region := ps.ByName("region")
     ti := ps.ByName("ti")
+    ss := ps.ByName("ss")
+    appid := ps.ByName("appid")
+    app := ps.ByName("app")
 
-    fmt.Printf("region：%v***ti:%v\n",region,ti)
+    fmt.Printf("region：%v***ti:%v**ss:%v***appid:%v***app:%v\n",region,ti,ss,appid,app)
+
+    body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+
+    if err := r.Body.Close(); err != nil {
+        panic(err)
+    }
+
+	fmt.Printf("params**%+v\n",body)
 }
 
 
