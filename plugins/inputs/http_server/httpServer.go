@@ -48,14 +48,17 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, _ httprouter
 
 
 func init() {
+	fmt.Printf("*******init**********\n")
 	inputs.Add("http_server", func() telegraf.Input {
 		t := &HttpServer{
 			Port: 9777,
 		}
 		router := httprouter.New()
+		fmt.Printf("**************1**********************\n")
 		router.POST("/goreplay", t.Goreplay)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
 		http.ListenAndServe(":8080", router)
+		fmt.Printf("**************2**********************\n")
 		return t
 	})
 }
