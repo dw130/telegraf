@@ -53,7 +53,7 @@ func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprout
 
 func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-    w.WriteHeader(http.StatusOk)
+    w.WriteHeader(http.StatusOK)
 
     region := ps.ByName("region")
     ti := ps.ByName("ti")
