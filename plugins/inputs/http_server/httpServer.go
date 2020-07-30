@@ -3,6 +3,8 @@ package http_server
 import (
 	"sync"
 	"fmt"
+	"io/ioutil"
+	"io"
 	//"time"
 	//"net"
 	"net/http"
@@ -36,29 +38,37 @@ func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
 
 func (s *HttpServer) Goreplay(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	params := httprouter.ParamsFromContext(r.Context())
-	fmt.Printf("params**%+v\n",params)
+
+    body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+
+    if err := r.Body.Close(); err != nil {
+        panic(err)
+    }
+
+	fmt.Printf("params**%+v\n",body)
 }
 
 
-func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	params := httprouter.ParamsFromContext(r.Context())
-	fmt.Printf("params**%+v\n",params)
+func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, , ps mux.Params) {
+    region := ps.ByName("region")
+    ti := ps.ByName("ti")
+
+    fmt.Printf("region：%v***ti:%v\n",region,ti)
 }
 
 
 func init() {
-	fmt.Printf("*******init**********\n")
+
 	inputs.Add("http_server", func() telegraf.Input {
 		t := &HttpServer{
 			Port: 9777,
 		}
 		router := httprouter.New()
-		fmt.Printf("**************1**********************\n")
+
 		router.POST("/goreplay", t.Goreplay)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
-		go http.ListenAndServe(":8080", router)
-		fmt.Printf("**************2**********************\n")
+		go http.ListenAndServe(":9777", router)
+
 		return t
 	})
 }
