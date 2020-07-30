@@ -41,14 +41,14 @@ func (_ *HttpServer) SampleConfig() string {
 
 func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
-	for (
+	for {
 		select {
 			case data := <-s.bufCh:
 				nn := time.UnixNano(data.times * 1e6 , 0)
 				fmt.Printf("data:%+v  nn:%v\n",data,nn)
 				acc.AddGauge(data.mm, data.fields, data.tags, nn)
 		}
-	)
+	}
 	return nil
 }
 
