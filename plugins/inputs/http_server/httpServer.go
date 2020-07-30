@@ -41,14 +41,18 @@ func (_ *HttpServer) SampleConfig() string {
 
 func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
+	fmt.Printf("**begin gather*%v**\n", len(s.bufCh)  )
 	for {
 		select {
 			case data := <-s.bufCh:
-				nn := time.UnixNano(data.times * 1e6 , 0)
+				nn := time.Unix(data.times / 1000 , 0)
 				fmt.Printf("data:%+v  nn:%v\n",data,nn)
 				acc.AddGauge(data.mm, data.fields, data.tags, nn)
+
+    		default:
 		}
 	}
+	fmt.Printf("**end gather***\n")
 	return nil
 }
 
@@ -81,6 +85,11 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     	tags["sevice_name"] = ss
     }
 
+    name := ps.ByName("name")
+    if name != "" {
+    	tags["name"] = name
+    }
+
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 
     if err := r.Body.Close(); err != nil {
@@ -99,12 +108,12 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     }
 
     metric := strings.TrimPrefix(strList[0][0:cc],"MONITOR_")
-
+    metrics := strings.ToLower(metric)
 	val, _ := strconv.ParseFloat(strList[1], 64)
 	tt, _ := strconv.ParseInt(strings.Trim(strList[2],"\n"), 10, 64)
 	//fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
 
-	t.bufCh <- &Point{mm:metric, tags:tags, fields: map[string]interface{}{"val":val},times:tt}
+	s.bufCh <- &Point{mm:metrics, tags:tags, fields: map[string]interface{}{"val":val},times:tt}
 }
 
 
@@ -120,7 +129,7 @@ func init() {
 		router := httprouter.New()
 
 		router.POST("/goreplay", t.Goreplay)
-		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:ss", t.Metric)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:name", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
 		go http.ListenAndServe(":9777", router)
 
