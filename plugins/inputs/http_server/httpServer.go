@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 	"strconv"
-	//"time"
+	"time"
 	//"net"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
@@ -16,11 +16,17 @@ import (
 )
 
 type HttpServer struct {
-
+	bufCh    chan *Point
 	mux      sync.Mutex
 	Port     int `toml:"port"`
 }
 
+type Point struct {
+	tags map[string]string
+	fields map[string]interface{}
+	mm string
+	times int64
+}
 
 func (_ *HttpServer) Description() string {
 	return "http server"
@@ -35,6 +41,14 @@ func (_ *HttpServer) SampleConfig() string {
 
 func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
+	for (
+		select {
+			case data := <-s.bufCh:
+				nn := time.UnixNano(data.times * 1e6 , 0)
+				fmt.Printf("data:%+v  nn:%v\n",data,nn)
+				acc.AddGauge(data.mm, data.fields, data.tags, nn)
+		}
+	)
 	return nil
 }
 
@@ -55,13 +69,17 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 
     w.WriteHeader(http.StatusOK)
 
-    region := ps.ByName("region")
-    ti := ps.ByName("ti")
     ss := ps.ByName("ss")
-    appid := ps.ByName("appid")
-    app := ps.ByName("app")
 
-    fmt.Printf("region：%v***ti:%v**ss:%v***appid:%v***app:%v\n",region,ti,ss,appid,app)
+    tags := map[string]string{
+    	"app_name": ps.ByName("app"),
+    	"app_id": ps.ByName("appid"),
+    	"thread": ps.ByName("ti"),
+    }
+
+    if ss != ps.ByName("app") {
+    	tags["sevice_name"] = ss
+    }
 
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 
@@ -74,17 +92,19 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     	fmt.Printf( "*catch wrong metric:%v\n", string(body) )
     	return
     }
-    //metric := strings.TrimRight(strList[0],"{}")
+
     cc := strings.Index(strList[0], "{")
     if cc <= 0 {
     	return
     }
-    metric := strList[0][0:cc]
+
+    metric := strings.TrimPrefix(strList[0][0:cc],"MONITOR_")
+
 	val, _ := strconv.ParseFloat(strList[1], 64)
-
 	tt, _ := strconv.ParseInt(strings.Trim(strList[2],"\n"), 10, 64)
+	//fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
 
-	fmt.Printf("metric:%s   val:%v strList[2]:%v  time:%v\n",metric,val,strList[2],tt)
+	t.bufCh <- &Point{mm:metric, tags:tags, fields: map[string]interface{}{"val":val},times:tt}
 }
 
 
@@ -94,9 +114,13 @@ func init() {
 		t := &HttpServer{
 			Port: 9777,
 		}
+
+		t.bufCh  =   make(chan *Point,5000)
+
 		router := httprouter.New()
 
 		router.POST("/goreplay", t.Goreplay)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:ss", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
 		go http.ListenAndServe(":9777", router)
 
