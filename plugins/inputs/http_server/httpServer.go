@@ -64,7 +64,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
         panic(err)
     }
 
-	fmt.Printf("params**%+v\n",body)
+	fmt.Printf("params**%+v\n",string(body))
 }
 
 
