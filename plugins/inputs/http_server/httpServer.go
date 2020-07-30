@@ -69,13 +69,17 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
         panic(err)
     }
 
-    strList := strings.Split(string(body)," ",-1)
+    strList := strings.Split(string(body)," ")
     if len(strList) < 3 {
     	fmt.Printf( "*catch wrong metric:%v\n", string(body) )
     	return
     }
-    metric := strings.TrimRight(strList[0])
-
+    //metric := strings.TrimRight(strList[0],"{}")
+    cc := strings.Index(strList[0], "{")
+    if cc <= 0 {
+    	return
+    }
+    metric := strList[0][0:cc]
 	val, _ := strconv.ParseFloat(strList[1], 64)
 
 	tt, _ := strconv.ParseInt(strList[2], 10, 64)
