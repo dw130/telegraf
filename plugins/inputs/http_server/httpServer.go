@@ -84,7 +84,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 
 	tt, _ := strconv.ParseInt(strList[2], 10, 64)
 
-	fmt.Printf("metric:%+v   val:%v strList[2]:%v  time:\n",metric,val,strList[2],tt)
+	fmt.Printf("metric:%s   val:%v strList[2]:%v  time:%v\n",metric,val,strList[2],tt)
 }
 
 
