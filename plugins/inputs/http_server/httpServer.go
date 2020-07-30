@@ -42,6 +42,8 @@ func (_ *HttpServer) SampleConfig() string {
 func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
 	fmt.Printf("**begin gather*%v**\n", len(s.bufCh)  )
+
+L:
 	for {
 		select {
 			case data := <-s.bufCh:
@@ -51,7 +53,7 @@ func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
 
     		default:
     			fmt.Printf("********default**************\n")
-    			break
+    			break L
 		}
 	}
 	fmt.Printf("**end gather***\n")
