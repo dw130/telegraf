@@ -140,6 +140,7 @@ func init() {
 		router := httprouter.New()
 
 		router.POST("/goreplay", t.Goreplay)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:name", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
 		go http.ListenAndServe(":9777", router)
