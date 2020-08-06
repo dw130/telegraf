@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
-
+	"time"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/filter"
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -109,13 +109,13 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		acc.AddCounter("net", fields, tags)
 
 		_,ok := s.lastVal[io.Name]
-		nowT = time.Now().Unix()
+		nowT := time.Now().Unix()
 
-		needFields := map[string]interface{}{
-			"bytes_sent":   io.BytesSent,
-			"bytes_recv":   io.BytesRecv,
-			"packets_sent": io.PacketsSent,
-			"packets_recv": io.PacketsRecv,
+		needFields := map[string]float64{
+			"bytes_sent":   float64(io.BytesSent.(uint64)),
+			"bytes_recv":   float64(io.BytesRecv.(uint64)),
+			"packets_sent": float64(io.PacketsSent.(uint64)),
+			"packets_recv": float64(io.PacketsRecv.(uint64)),
 		}
 
 		if ok == true {

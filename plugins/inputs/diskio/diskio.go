@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
+	"time"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/filter"
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -157,10 +157,10 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 		acc.AddCounter("diskio", fields, tags)
 
 		_,ok := s.lastVal[io.Name]
-		nowT = time.Now().Unix()
+		nowT := time.Now().Unix()
 		if ok == true {
-			
-			ii := float64(io.IoTime - s.lastVal[io.Name]) / float64(nowT - s.lastTime)
+
+			ii := float64( float64( io.IoTime.(uint64) ) - s.lastVal[io.Name]) / float64(nowT - s.lastTime)
 
 			acc.AddGauge("diskiotime", map[string]interface{}{"value":}, tags)			
 		}
