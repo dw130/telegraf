@@ -96,7 +96,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 
     name := ps.ByName("name")
     if name != "" {
-    	tags["name"] = name
+    	tags["midd_instance"] = name
     }
 
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
