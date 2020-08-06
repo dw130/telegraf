@@ -62,7 +62,7 @@ func (s *NetStats) Gather(acc telegraf.Accumulator) error {
 	}
 	var total = 0
 	for k,_ := range fields {
-		if strings.Contains(k,"tcp_") {
+		if strings.Contains(k,"tcp_") == true {
 			total = total + fields[k].(int)
 		}
 	}
