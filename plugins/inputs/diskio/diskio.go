@@ -165,7 +165,7 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 			acc.AddGauge("diskiotime", map[string]interface{}{"value":ii}, tags)			
 		}
 		s.lastTime = nowT
-		s.lastVal[io.Name] = io.IoTime
+		s.lastVal[io.Name] = float64(io.IoTime)
 	}
 
 	return nil

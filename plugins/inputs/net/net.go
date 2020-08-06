@@ -111,7 +111,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		_,ok := s.lastVal[io.Name]
 		nowT := time.Now().Unix()
 
-		needFields := map[string]float64{
+		needFields := map[string]interface{}{
 			"bytes_sent":   float64(io.BytesSent),
 			"bytes_recv":   float64(io.BytesRecv),
 			"packets_sent": float64(io.PacketsSent),
