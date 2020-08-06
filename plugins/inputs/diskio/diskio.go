@@ -155,17 +155,18 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 			"merged_writes":    io.MergedWriteCount,
 		}
 		acc.AddCounter("diskio", fields, tags)
-		
+
 		fmt.Printf("counter***%v***%v\n",tags,fields)
 
 		_,ok := s.lastVal[io.Name]
 		nowT := time.Now().Unix()
 		if ok == true {
 
+			fmt.Printf("**********gauge********%v****io.IoTime:%v***%v\n",s.lastVal[io.Name],io.IoTime, float64(nowT - s.lastTime) )
+
 			ii := float64( float64( io.IoTime ) - s.lastVal[io.Name]) / float64(nowT - s.lastTime)
 
-			acc.AddGauge("diskiotime", map[string]interface{}{"value":ii}, tags)
-			fmt.Printf("**********gauge********%v**%v\n",tags,ii)			
+			acc.AddGauge("diskiotime", map[string]interface{}{"value":ii}, tags)		
 		}
 		s.lastTime = nowT
 		s.lastVal[io.Name] = float64(io.IoTime)
