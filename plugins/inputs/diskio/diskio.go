@@ -106,6 +106,8 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 		return fmt.Errorf("error getting disk io info: %s", err.Error())
 	}
 
+	nowT := time.Now().Unix()
+	
 	for _, io := range diskio {
 
 		match := false
@@ -159,7 +161,7 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 		fmt.Printf("counter***%v***%v\n",tags,fields)
 
 		_,ok := s.lastVal[io.Name]
-		nowT := time.Now().Unix()
+
 		if ok == true {
 
 			fmt.Printf("**********gauge********%v****io.IoTime:%v***%v\n",s.lastVal[io.Name],io.IoTime, float64(nowT - s.lastTime) )
@@ -168,10 +170,9 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 
 			acc.AddGauge("diskiotime", map[string]interface{}{"value":ii}, tags)		
 		}
-		s.lastTime = nowT
 		s.lastVal[io.Name] = float64(io.IoTime)
 	}
-
+	s.lastTime = nowT
 	return nil
 }
 

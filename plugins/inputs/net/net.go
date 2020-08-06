@@ -66,6 +66,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		interfacesByName[iface.Name] = iface
 	}
 
+	nowT := time.Now().Unix()
 	for _, io := range netio {
 		if len(s.Interfaces) != 0 {
 			var found bool
@@ -109,7 +110,6 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		acc.AddCounter("net", fields, tags)
 
 		_,ok := s.lastVal[io.Name]
-		nowT := time.Now().Unix()
 
 		needFields := map[string]interface{}{
 			"bytes_sent":   float64(io.BytesSent),
@@ -136,10 +136,10 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		} else {
 			s.lastVal[io.Name] = needFields
 		}
-		s.lastTime = nowT
 
 	}
 
+	s.lastTime = nowT
 	// Get system wide stats for different network protocols
 	// (ignore these stats if the call fails)
 	if !s.IgnoreProtocolStats {
