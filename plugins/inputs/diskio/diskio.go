@@ -107,7 +107,7 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 	}
 
 	nowT := time.Now().Unix()
-	
+
 	for _, io := range diskio {
 
 		match := false
@@ -164,7 +164,7 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 
 		if ok == true {
 
-			fmt.Printf("**********gauge********%v****io.IoTime:%v***%v\n",s.lastVal[io.Name],io.IoTime, float64(nowT - s.lastTime) )
+			//fmt.Printf("**********gauge********%v****io.IoTime:%v***%v\n",s.lastVal[io.Name],io.IoTime, float64(nowT - s.lastTime) )
 
 			ii := float64( float64( io.IoTime ) - s.lastVal[io.Name]) / float64(nowT - s.lastTime)
 
