@@ -46,6 +46,7 @@ func (s *SystemStats) Gather(acc telegraf.Accumulator) error {
 		"load5":  loadavg.Load5,
 		"load15": loadavg.Load15,
 		"n_cpus": numCPUs,
+		"load": float64(loadavg.Load1) / float64(numCPUs)
 	}
 
 	users, err := host.Users()

@@ -18,6 +18,9 @@ type NetIOStats struct {
 	skipChecks          bool
 	IgnoreProtocolStats bool
 	Interfaces          []string
+
+	lastVal      map[string] map[string]float64
+	lastTime     int64
 }
 
 func (_ *NetIOStats) Description() string {
@@ -104,6 +107,37 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 			"drop_out":     io.Dropout,
 		}
 		acc.AddCounter("net", fields, tags)
+
+		_,ok := s.lastVal[io.Name]
+		nowT = time.Now().Unix()
+
+		needFields := map[string]interface{}{
+			"bytes_sent":   io.BytesSent,
+			"bytes_recv":   io.BytesRecv,
+			"packets_sent": io.PacketsSent,
+			"packets_recv": io.PacketsRecv,
+		}
+
+		if ok == true {
+
+			ff := true
+			for k,_ := range needFields {
+				_,fieldOk := s.lastVal[io.Name][k]
+				if fieldOk == false {
+					ff = false
+				}
+				tmp := needFields[k]
+				needFields[k] = float64(tmp - s.lastVal[io.Name][k]) / float64(nowT - s.lastTime)
+				s.lastVal[io.Name][k] = tmp
+			}
+			if ff == true {
+				acc.AddGauge("diskiotime", needFields, tags)
+			}			
+		} else {
+			s.lastVal[io.Name] = needFields
+		}
+		s.lastTime = nowT
+
 	}
 
 	// Get system wide stats for different network protocols
@@ -129,6 +163,6 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 
 func init() {
 	inputs.Add("net", func() telegraf.Input {
-		return &NetIOStats{ps: system.NewSystemPS()}
+		return &NetIOStats{ps: system.NewSystemPS(),	lastVal: map[string] map[string]float64{} }
 	})
 }

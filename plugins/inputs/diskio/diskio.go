@@ -28,6 +28,9 @@ type DiskIO struct {
 	infoCache    map[string]diskInfoCache
 	deviceFilter filter.Filter
 	initialized  bool
+
+	lastVal      map[string]float64
+	lastTime     int64
 }
 
 func (_ *DiskIO) Description() string {
@@ -152,6 +155,17 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 			"merged_writes":    io.MergedWriteCount,
 		}
 		acc.AddCounter("diskio", fields, tags)
+
+		_,ok := s.lastVal[io.Name]
+		nowT = time.Now().Unix()
+		if ok == true {
+			
+			ii := float64(io.IoTime - s.lastVal[io.Name]) / float64(nowT - s.lastTime)
+
+			acc.AddGauge("diskiotime", map[string]interface{}{"value":}, tags)			
+		}
+		s.lastTime = nowT
+		s.lastVal[io.Name] = io.IoTime
 	}
 
 	return nil
@@ -219,6 +233,6 @@ func (s *DiskIO) diskTags(devName string) map[string]string {
 func init() {
 	ps := system.NewSystemPS()
 	inputs.Add("diskio", func() telegraf.Input {
-		return &DiskIO{ps: ps, SkipSerialNumber: true}
+		return &DiskIO{ps: ps, SkipSerialNumber: true,	lastVal: map[string]float64{}  }
 	})
 }
