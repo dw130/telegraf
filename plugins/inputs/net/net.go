@@ -112,7 +112,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		nowT := time.Now().Unix()
 
 		needFields := map[string]float64{
-			"bytes_sent":   float64(io.BytesSent.(uint64)),
+			"bytes_sent":   float64(io.BytesSent),
 			"bytes_recv":   float64(io.BytesRecv.(uint64)),
 			"packets_sent": float64(io.PacketsSent.(uint64)),
 			"packets_recv": float64(io.PacketsRecv.(uint64)),
