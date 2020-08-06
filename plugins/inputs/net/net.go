@@ -131,7 +131,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 				s.lastVal[io.Name][k] = tmp
 			}
 			if ff == true {
-				acc.AddGauge("diskiotime", needFields, tags)
+				acc.AddGauge("net_traffic", needFields, tags)
 			}			
 		} else {
 			s.lastVal[io.Name] = needFields
