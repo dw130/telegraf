@@ -19,7 +19,7 @@ type NetIOStats struct {
 	IgnoreProtocolStats bool
 	Interfaces          []string
 
-	lastVal      map[string] map[string]float64
+	lastVal      map[string] map[string]interface{}
 	lastTime     int64
 }
 
@@ -126,8 +126,8 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 				if fieldOk == false {
 					ff = false
 				}
-				tmp := needFields[k]
-				needFields[k] = float64(tmp - s.lastVal[io.Name][k]) / float64(nowT - s.lastTime)
+				tmp := needFields[k].(float64)
+				needFields[k] = float64(tmp - s.lastVal[io.Name][k].(float64)) / float64(nowT - s.lastTime)
 				s.lastVal[io.Name][k] = tmp
 			}
 			if ff == true {
@@ -163,6 +163,6 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 
 func init() {
 	inputs.Add("net", func() telegraf.Input {
-		return &NetIOStats{ps: system.NewSystemPS(),	lastVal: map[string] map[string]float64{} }
+		return &NetIOStats{ps: system.NewSystemPS(),	lastVal: map[string] map[string] interface{}{} }
 	})
 }
