@@ -113,9 +113,9 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 
 		needFields := map[string]float64{
 			"bytes_sent":   float64(io.BytesSent),
-			"bytes_recv":   float64(io.BytesRecv.(uint64)),
-			"packets_sent": float64(io.PacketsSent.(uint64)),
-			"packets_recv": float64(io.PacketsRecv.(uint64)),
+			"bytes_recv":   float64(io.BytesRecv),
+			"packets_sent": float64(io.PacketsSent),
+			"packets_recv": float64(io.PacketsRecv),
 		}
 
 		if ok == true {
