@@ -3,7 +3,7 @@ package net
 import (
 	"fmt"
 	"syscall"
-
+	"strings"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/inputs/system"
@@ -60,6 +60,13 @@ func (s *NetStats) Gather(acc telegraf.Accumulator) error {
 		"tcp_none":        counts["NONE"],
 		"udp_socket":      counts["UDP"],
 	}
+	var total = 0
+	for k,_ := range fields {
+		if strings.Contains(fields[k],"tcp_") {
+			total = total + fields[k].(int)
+		}
+	}
+	fields["value"] = total
 	acc.AddFields("netstat", fields, tags)
 
 	return nil
