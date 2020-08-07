@@ -99,6 +99,16 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     	tags["midd_instance"] = name
     }
 
+    redis := ps.ByName("redis")
+    if redis != "" {
+    	tags["redis_function"] = redis
+    }
+
+    mysql := ps.ByName("mysql")
+    if mysql != "" {
+    	tags["mysql_function"] = mysql
+    }
+
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 
     if err := r.Body.Close(); err != nil {
@@ -140,6 +150,8 @@ func init() {
 		router := httprouter.New()
 
 		router.POST("/goreplay", t.Goreplay)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/MYSQL/:mysql/sevice_name/:ss/thread_index/:ti", t.Metric)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/REDIS/:redis/sevice_name/:ss/thread_index/:ti", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:name", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
