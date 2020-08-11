@@ -42,14 +42,14 @@ func (_ *HttpServer) SampleConfig() string {
 	return sConfig
 }
 
-func (s *HttpServer) Gather(acc telegraf.Accumulator) error {
+func (t *HttpServer) Gather(acc telegraf.Accumulator) error {
 
 	//fmt.Printf("**begin gather*%v**\n", len(s.bufCh)  )
 
 L:
 	for {
 		select {
-			case data := <-s.bufCh:
+			case data := <-t.bufCh:
 
 				tagS := data.tagS
 				_,ok := t.tagFields[tagS]
