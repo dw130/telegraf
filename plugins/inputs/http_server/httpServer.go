@@ -19,13 +19,16 @@ type HttpServer struct {
 	bufCh    chan *Point
 	mux      sync.Mutex
 	Port     int `toml:"port"`
+	tagFields     map[string] map[string]interface{}
+	tagTags    map[string] map[string]string{}
 }
 
 type Point struct {
 	tags map[string]string
-	fields map[string]interface{}
+	fields float64
 	mm string
 	times int64
+	tagS string
 }
 
 func (_ *HttpServer) Description() string {
@@ -47,12 +50,30 @@ L:
 	for {
 		select {
 			case data := <-s.bufCh:
-				nn := time.Unix(data.times / 1000 , 0)
-				//fmt.Printf("data:%+v  nn:%v\n",data,nn)
-				acc.AddGauge(data.mm, data.fields, data.tags, nn)
+
+				tagS := data.tagS
+				_,ok := t.tagFields[tagS]
+				if ok == false {
+					t.tagFields[tagS] = map[string]interface{}{}
+				}
+
+				_,ok := t.tagTags[tagS]
+				if ok == false {
+					t.tagTags[tagS] = data.tags
+				}
+
+
+				t.tagFields[tagS][data.mm] = data.fields
 
     		default:
-    			//fmt.Printf("********default**************\n")
+    			mm := "receive_metrics"
+    			for k,_ := range t.tagFields {
+    				acc.AddGauge( mm, t.tagFields[k], t.tagTags[k], time.Now() )
+    				fmt.Printf("*********tt****%v***%v\n",t.tagFields[k], t.tagTags[k])
+				}
+
+				t.tagFields =  map[string] map[string]interface{}{}
+
     			break L
 		}
 	}
@@ -77,36 +98,35 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 
     w.WriteHeader(http.StatusOK)
 
-    ss := ps.ByName("ss")
-
     tags := map[string]string{
     	"app_name": ps.ByName("app"),
     	"app_id": ps.ByName("appid"),
-    	//"thread": ps.ByName("ti"),
     }
+
+    tagS := fmt.Sprintf("%s%s",ps.ByName("app"),ps.ByName("appid"))
 
     th := ps.ByName("ti")
     if th != "" {
     	tags["thread"] = th
-    }
-
-    if ss != ps.ByName("app") && ss != "" {
-    	tags["sevice_name"] = ss
+		tagS = fmt.Sprintf("%s%s",tagS,th)
     }
 
     name := ps.ByName("name")
     if name != "" {
     	tags["midd_instance"] = name
+  		tagS = fmt.Sprintf("%s%s",tagS,name)
     }
 
     redis := ps.ByName("redis")
     if redis != "" {
     	tags["redis_function"] = redis
+  		tagS = fmt.Sprintf("%s%s",tagS,redis)
     }
 
     mysql := ps.ByName("mysql")
     if mysql != "" {
     	tags["mysql_function"] = mysql
+  		tagS = fmt.Sprintf("%s%s",tagS,mysql)
     }
 
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -134,7 +154,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 	tt, _ := strconv.ParseInt(strings.Trim(strList[2],"\n"), 10, 64)
 	//fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
 
-	s.bufCh <- &Point{mm:metrics, tags:tags, fields: map[string]interface{}{"val":val},times:tt}
+	s.bufCh <- &Point{mm:metrics, tags:tags, fields: val,times:tt,tagS:tagS}
 }
 
 
@@ -146,6 +166,8 @@ func init() {
 		}
 
 		t.bufCh  =   make(chan *Point,5000)
+		t.tagFields   =  map[string] map[string]interface{}{}
+		t.tagTags  =  map[string] map[string]string{}
 
 		router := httprouter.New()
 

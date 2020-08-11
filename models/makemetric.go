@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"github.com/influxdata/telegraf"
 )
 
@@ -27,7 +28,11 @@ func makemetric(
 
 	// Apply plugin-wide tags
 	for k, v := range tags {
-		if _, ok := metric.GetTag(k); !ok {
+		_, ok := metric.GetTag(k) 
+		if  k == "app_name" && ok == true && strings.Contains(v,"mul") {
+			metric.AddTag(k, v)
+		}
+		if ok == false {
 			metric.AddTag(k, v)
 		}
 	}

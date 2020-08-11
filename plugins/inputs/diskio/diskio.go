@@ -158,7 +158,7 @@ func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
 		}
 		acc.AddCounter("diskio", fields, tags)
 
-		fmt.Printf("counter***%v***%v\n",tags,fields)
+		//fmt.Printf("counter***%v***%v\n",tags,fields)
 
 		_,ok := s.lastVal[io.Name]
 
