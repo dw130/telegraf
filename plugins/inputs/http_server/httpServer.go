@@ -20,7 +20,7 @@ type HttpServer struct {
 	mux      sync.Mutex
 	Port     int `toml:"port"`
 	tagFields     map[string] map[string]interface{}
-	tagTags    map[string] map[string]string{}
+	tagTags       map[string] map[string]string
 }
 
 type Point struct {
@@ -57,7 +57,7 @@ L:
 					t.tagFields[tagS] = map[string]interface{}{}
 				}
 
-				_,ok := t.tagTags[tagS]
+				_,ok = t.tagTags[tagS]
 				if ok == false {
 					t.tagTags[tagS] = data.tags
 				}
