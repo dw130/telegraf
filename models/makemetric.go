@@ -29,7 +29,8 @@ func makemetric(
 	// Apply plugin-wide tags
 	for k, v := range tags {
 		_, ok := metric.GetTag(k) 
-		if  k == "app_name" && ok == true && strings.Contains(v,"mul") {
+		fmt.Printf("****1*****%v**%v\n",k,ok,strings.HasPrefix(v,"mul"))
+		if  k == "app_name" && ok == true && strings.HasPrefix(v,"mul") {
 			metric.AddTag(k, v)
 		}
 		if ok == false {
@@ -38,7 +39,12 @@ func makemetric(
 	}
 	// Apply global tags
 	for k, v := range globalTags {
-		if _, ok := metric.GetTag(k); !ok {
+		_, ok := metric.GetTag(k) 
+		fmt.Printf("****2*****%v**%v\n",k,ok,strings.HasPrefix(v,"mul"))
+		if  k == "app_name" && ok == true && strings.HasPrefix(v,"mul") {
+			metric.AddTag(k, v)
+		}
+		if ok == false {
 			metric.AddTag(k, v)
 		}
 	}
