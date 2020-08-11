@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strings"
 	"github.com/influxdata/telegraf"
 )
@@ -30,7 +29,6 @@ func makemetric(
 	// Apply plugin-wide tags
 	for k, v := range tags {
 		_, ok := metric.GetTag(k) 
-		fmt.Printf("****1*****%v**%v\n",k,ok,strings.HasPrefix(v,"mul"))
 		if  k == "app_name" && ok == true && strings.HasPrefix(v,"mul") {
 			metric.AddTag(k, v)
 		}
@@ -41,7 +39,6 @@ func makemetric(
 	// Apply global tags
 	for k, v := range globalTags {
 		_, ok := metric.GetTag(k) 
-		fmt.Printf("****2*****%v**%v\n",k,ok,strings.HasPrefix(v,"mul"))
 		if  k == "app_name" && ok == true && strings.HasPrefix(v,"mul") {
 			metric.AddTag(k, v)
 		}
