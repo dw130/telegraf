@@ -158,9 +158,9 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 	tt, _ := strconv.ParseInt(strings.Trim(strList[2],"\n"), 10, 64)
 	//fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
 
-	//if metrics == "connection_num" && val == 0.0 {
-	//	return
-	//}
+	if metrics == "connection_num" && val == 0.0 {
+		return
+	}
 	if redisTag == true {
 		metrics = metrics + "_redis"
 	}
