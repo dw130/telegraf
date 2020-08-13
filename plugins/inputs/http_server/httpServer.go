@@ -167,7 +167,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 	if mysqlTag == true {
 		metrics = metrics + "_mysql"
 	}
-
+	fmt.Printf("check******%v**%v****%v***%v\n",redisTag,mysqlTag,metrics,tags)
 	s.bufCh <- &Point{mm:metrics, tags:tags, fields: val,times:tt,tagS:tagS}
 }
 
