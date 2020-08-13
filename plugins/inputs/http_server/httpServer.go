@@ -118,15 +118,19 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     }
 
     redis := ps.ByName("redis")
+    var redisTag = false
     if redis != "" {
     	tags["redis_function"] = redis
   		tagS = fmt.Sprintf("%s%s",tagS,redis)
+  		redisTag = true
     }
 
     mysql := ps.ByName("mysql")
+    var mysqlTag = false
     if mysql != "" {
     	tags["mysql_function"] = mysql
   		tagS = fmt.Sprintf("%s%s",tagS,mysql)
+  		mysqlTag = true
     }
 
     body, _ := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -157,7 +161,13 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 	//if metrics == "connection_num" && val == 0.0 {
 	//	return
 	//}
-	
+	if redisTag == true {
+		metrics = metrics + "_redis"
+	}
+	if mysqlTag == true {
+		metrics = metrics + "_mysql"
+	}
+
 	s.bufCh <- &Point{mm:metrics, tags:tags, fields: val,times:tt,tagS:tagS}
 }
 
