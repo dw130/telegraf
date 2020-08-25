@@ -117,6 +117,7 @@ func (s *CPUStats) Gather(acc telegraf.Accumulator) error {
 			"usage_guest":      100 * (cts.Guest - lastCts.Guest) / totalDelta,
 			"usage_guest_nice": 100 * (cts.GuestNice - lastCts.GuestNice) / totalDelta,
 		}
+		fieldsG["cpu_usage"] = 100 - fieldsG["usage_idle"]
 		if s.ReportActive {
 			fieldsG["usage_active"] = 100 * (active - lastActive) / totalDelta
 		}
