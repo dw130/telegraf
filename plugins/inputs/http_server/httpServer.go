@@ -156,7 +156,7 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
     metrics := strings.ToLower(metric)
 	val, _ := strconv.ParseFloat(strList[1], 64)
 	tt, _ := strconv.ParseInt(strings.Trim(strList[2],"\n"), 10, 64)
-	fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
+	//fmt.Printf("metric:%s   val:%v  time:%v\n",metric,val,tt)
 
 	if metrics == "connection_num" {
 		return
