@@ -57,6 +57,11 @@ func (pg *NativeFinder) PidFile(path string) ([]PID, error) {
 
 }
 
+
+func (pg *NativeFinder) FullPatternN(pattern string) ([]PID, map[PID] []string, error) {
+	return []PID{}, map[PID] []string{}, nil
+}
+
 //FullPattern matches on the command line when the process was executed
 func (pg *NativeFinder) FullPattern(pattern string) ([]PID, error) {
 	var pids []PID

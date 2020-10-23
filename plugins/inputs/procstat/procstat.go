@@ -126,7 +126,7 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 
 	f, err := p.getPIDFinder()
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	pids,mapList,err := f.FullPatternN(p.Pattern)

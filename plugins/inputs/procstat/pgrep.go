@@ -62,7 +62,7 @@ func (pg *Pgrep) FullPatternN(pattern string) ([]PID, map[PID] []string, error) 
 func findc(path string, args []string) ([]PID, map[PID] []string, error) {
 	out, err := run(path, args)
 	if err != nil {
-		return []PID, map[PID] []string, err
+		return []PID{}, map[PID] []string{}, err
 	}
 
 	return parseOutputN(out)

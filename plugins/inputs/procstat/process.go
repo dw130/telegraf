@@ -33,6 +33,7 @@ type PIDFinder interface {
 	Pattern(pattern string) ([]PID, error)
 	Uid(user string) ([]PID, error)
 	FullPattern(path string) ([]PID, error)
+	FullPatternN(pattern string) ([]PID, map[PID] []string, error) 
 }
 
 type Proc struct {
