@@ -72,13 +72,13 @@ func parseOutputN(out string) ([]PID, map[PID] []string, error) {
 	pids := []PID{}
 	var ret =  map[PID] []string{}
 
-	fmt.Printf("*****out****%v\n",out)
+	//fmt.Printf("*****out****%v\n",out)
 
 	ll := strings.Split(out,"\n")
 	for k,_ := range  ll {
 
 		ssOut := ll[k]
-		fmt.Printf("****ss**Out****%v\n", ssOut )
+		//fmt.Printf("****ss**Out****%v\n", ssOut )
 
 		fields := strings.Fields(ssOut)
 		if len(fields) != 4 {

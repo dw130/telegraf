@@ -137,8 +137,8 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 
 	tags := map[string]string{}
 
-	fmt.Printf("********pids*******%+v\n",pids)
-	fmt.Printf("********mapList*******%+v\n",mapList)
+	//fmt.Printf("********pids*******%+v\n",pids)
+	//fmt.Printf("********mapList*******%+v\n",mapList)
 
 	procs, err := p.updateProcesses(pids, tags, p.procs)
 	if err != nil {
@@ -184,9 +184,11 @@ func (p *Procstat) addMetricN(proc Process, acc telegraf.Accumulator, mapList ma
 
 	pid := proc.PID()
 	ret,ok := mapList[pid]
-	fmt.Printf("*******fields****%v***ret:%v\n",fields, ret  )
+	//fmt.Printf("*******fields****%v***ret:%v\n",fields, ret  )
 	if ok {
-		acc.AddFields("ys_process", fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] })
+		acc.AddGauge( "ys_process",fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] }, time.Now() )
+		fmt.Printf("*******fields****%v***ret:%v\n",fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] }  )
+		//acc.AddFields("ys_process", fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] })
 	}
 }
 
