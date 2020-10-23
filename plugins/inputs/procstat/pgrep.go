@@ -53,6 +53,59 @@ func (pg *Pgrep) FullPattern(pattern string) ([]PID, error) {
 	return find(pg.path, args)
 }
 
+func (pg *Pgrep) FullPatternN(pattern string) ([]PID, map[PID] []string, error)  {
+	args := []string{"-a", pattern}
+	return findc(pg.path, args)
+}
+
+
+func findc(path string, args []string) ([]PID, map[PID] []string, error) {
+	out, err := run(path, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseOutputN(out)
+}
+
+func parseOutputN(out string) ([]PID, map[PID] []string, error) {
+	pids := []PID{}
+	var ret =  map[PID] []string{}
+
+	fmt.Printf("*****out****%v\n",out)
+
+	for k,_ := range strings.Split(out,"\n") {
+
+		ssOut := out[k]
+		fmt.Printf("****ss**Out****%v\n", ssOut )
+
+		fields := strings.Fields(ssOut)
+		if len(fields) != 4 {
+			continue
+		}
+
+		if fields[2] != "-i" {
+			continue
+		}
+
+		pid,err := strconv.Atoi( fields[0]  )
+		if err != nil {
+			return pids,ret,err
+		}
+
+		appList := strings.Split( fields[1],"/"  )
+		app := appList[  len(appList) - 1  ]
+
+		appId := fields[3]
+
+		pids = append(pids, PID(pid))
+		ret[ PID(pid)  ] = []string{ app, appId }
+	}
+
+	return pids,ret,nil
+}
+
+
 func find(path string, args []string) ([]PID, error) {
 	out, err := run(path, args)
 	if err != nil {

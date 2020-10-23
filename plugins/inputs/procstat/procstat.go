@@ -109,7 +109,7 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 		p.createProcess = defaultProcess
 	}
 
-	pids, tags, err := p.findPids(acc)
+	/***pids, tags, err := p.findPids(acc)
 	if err != nil {
 		fields := map[string]interface{}{
 			"pid_count":   0,
@@ -122,7 +122,23 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 		}
 		acc.AddFields("procstat_lookup", fields, tags)
 		return err
+	}***/
+
+	f, err := p.getPIDFinder()
+	if err != nil {
+		return nil, nil, err
 	}
+
+	pids,mapList,err := f.FullPatternN(p.Pattern)
+	if err != nil {
+		fmt.Printf("***p.Pattern:%v*****!*****fetch pid fail:%+v\n",p.Pattern, err)
+		return err
+	}
+
+	tags := map[string]string{}
+
+	fmt.Printf("********pids*******%+v\n",pids)
+	fmt.Printf("********mapList*******%+v\n",mapList)
 
 	procs, err := p.updateProcesses(pids, tags, p.procs)
 	if err != nil {
@@ -132,19 +148,46 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 	p.procs = procs
 
 	for _, proc := range p.procs {
-		p.addMetric(proc, acc)
+		p.addMetricN( proc, acc, mapList )
 	}
 
-	fields := map[string]interface{}{
-		"pid_count":   len(pids),
-		"running":     len(procs),
-		"result_code": 0,
-	}
-	tags["pid_finder"] = p.PidFinder
-	tags["result"] = "success"
-	acc.AddFields("procstat_lookup", fields, tags)
+	//fields := map[string]interface{}{
+	//	"pid_count":   len(pids),
+	//	"running":     len(procs),
+	//	"result_code": 0,
+	//}
+	//tags["pid_finder"] = p.PidFinder
+	//tags["result"] = "success"
+	//acc.AddFields("procstat_lookup", fields, tags)
 
 	return nil
+}
+
+func (p *Procstat) addMetricN(proc Process, acc telegraf.Accumulator, mapList map[PID] []string ) {
+	fields := map[string]interface{}{}
+
+	cpu_perc, err := proc.Percent(time.Duration(0))
+	if err == nil {
+		fields["cpu_usage"] = cpu_perc
+	}
+
+	mem, err := proc.MemoryInfo()
+	if err == nil {
+		fields["mem_usage"] = mem.RSS
+		fields["virt_usage"] = mem.VMS
+	}
+
+	fds, err := proc.NumFDs()
+	if err == nil {
+		fields["fd"] = fds
+	}
+
+	pid := proc.PID()
+	ret,ok := mapList[pid]
+	fmt.Printf("*******fields****%v***ret:%v\n",fields, ret  )
+	if ok {
+		acc.AddFields("ys_process", fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] })
+	}
 }
 
 // Add metrics a single Process
