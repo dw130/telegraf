@@ -62,7 +62,7 @@ func (pg *Pgrep) FullPatternN(pattern string) ([]PID, map[PID] []string, error) 
 func findc(path string, args []string) ([]PID, map[PID] []string, error) {
 	out, err := run(path, args)
 	if err != nil {
-		return nil, err
+		return []PID, map[PID] []string, err
 	}
 
 	return parseOutputN(out)
@@ -74,9 +74,10 @@ func parseOutputN(out string) ([]PID, map[PID] []string, error) {
 
 	fmt.Printf("*****out****%v\n",out)
 
-	for k,_ := range strings.Split(out,"\n") {
+	ll := strings.Split(out,"\n")
+	for k,_ := range  ll {
 
-		ssOut := out[k]
+		ssOut := ll[k]
 		fmt.Printf("****ss**Out****%v\n", ssOut )
 
 		fields := strings.Fields(ssOut)
