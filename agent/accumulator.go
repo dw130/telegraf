@@ -2,7 +2,7 @@ package agent
 
 import (
 	"time"
-	"fmt"
+	//"fmt"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/metric"
 )
@@ -91,7 +91,7 @@ func (ac *accumulator) addFields(
 	t ...time.Time,
 ) {
 	m, err := metric.New(measurement, tags, fields, ac.getTime(t), tp)
-	fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
+	//fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
 	if err != nil {
 		return
 	}
