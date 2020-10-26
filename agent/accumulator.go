@@ -82,10 +82,10 @@ func (ac *accumulator) AddMetric(m telegraf.Metric) {
 
 	if m := ac.maker.MakeMetric(m); m != nil {
 
-		if strings.Contains(m.Name(),"process") {
+		//if strings.Contains(m.Name(),"process") {
 		//if measurement == "ys_process_new" || measurement == "ys_process" {
-			fmt.Printf("********addFields********%+v***\n", m)
-		}
+			//fmt.Printf("********addFields********%+v***\n", m)
+		//}
 		ac.metrics <- m
 	}
 }
@@ -99,10 +99,10 @@ func (ac *accumulator) addFields(
 ) {
 	m, err := metric.New(measurement, tags, fields, ac.getTime(t), tp)
 
-	if strings.Contains(measurement,"process") {
+	//if strings.Contains(measurement,"process") {
 	//if measurement == "ys_process_new" || measurement == "ys_process" {
-		fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
-	}
+		//fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
+	//}
 
 	//fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
 	if err != nil {

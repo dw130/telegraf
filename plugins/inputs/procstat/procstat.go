@@ -173,8 +173,8 @@ func (p *Procstat) addMetricN(proc Process, acc telegraf.Accumulator, mapList ma
 
 	mem, err := proc.MemoryInfo()
 	if err == nil {
-		fields["mem_usage"] = mem.RSS
-		fields["virt_usage"] = mem.VMS
+		fields["mem_usage"] = float64(mem.RSS) / 1024.0
+		fields["virt_usage"] = float64(mem.VMS) / 1024.0
 	}
 
 	fds, err := proc.NumFDs()
@@ -186,7 +186,7 @@ func (p *Procstat) addMetricN(proc Process, acc telegraf.Accumulator, mapList ma
 	ret,ok := mapList[pid]
 	//fmt.Printf("*******fields****%v***ret:%v\n",fields, ret  )
 	if ok {
-		acc.AddGauge( "ys_process_new",fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] }, time.Now() )
+		acc.AddGauge( "ys_process",fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] }, time.Now() )
 		//fmt.Printf("*******fields****%v***ret:%v\n",fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] }  )
 		//acc.AddFields("ys_process", fields, map[string]string{"app_name": ret[0] ,"app_id": ret[1] })
 	}
