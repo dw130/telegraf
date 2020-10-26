@@ -2,7 +2,8 @@ package agent
 
 import (
 	"time"
-	//"fmt"
+	"strings"
+	"fmt"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/metric"
 )
@@ -78,7 +79,13 @@ func (ac *accumulator) AddHistogram(
 
 func (ac *accumulator) AddMetric(m telegraf.Metric) {
 	m.SetTime(m.Time().Round(ac.precision))
+
 	if m := ac.maker.MakeMetric(m); m != nil {
+
+		if strings.Contains(m.Measurement,"process") {
+		//if measurement == "ys_process_new" || measurement == "ys_process" {
+			fmt.Printf("********addFields********%+v***\n", )
+		}
 		ac.metrics <- m
 	}
 }
@@ -92,7 +99,8 @@ func (ac *accumulator) addFields(
 ) {
 	m, err := metric.New(measurement, tags, fields, ac.getTime(t), tp)
 
-	if measurement == "ys_process_new" || measurement == "ys_process" {
+	if strings.Contains(measurement,"process") {
+	//if measurement == "ys_process_new" || measurement == "ys_process" {
 		fmt.Printf("********addFields********%+v***%v***%+v\n", m,err,measurement )
 	}
 

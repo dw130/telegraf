@@ -144,7 +144,7 @@ func (e *Exec) ProcessCommand(command string, acc telegraf.Accumulator, wg *sync
 	defer wg.Done()
 	_, isNagios := e.parser.(*nagios.NagiosParser)
 
-	fmt.Printf("********command*********%v\n",command)
+	//fmt.Printf("********command*********%v\n",command)
 
 	out, errbuf, runErr := e.runner.Run(command, e.Timeout.Duration)
 	if !isNagios && runErr != nil {
@@ -153,8 +153,8 @@ func (e *Exec) ProcessCommand(command string, acc telegraf.Accumulator, wg *sync
 		return
 	}
 
-	fmt.Printf("********out*********%v\n",out)
-	
+	//fmt.Printf("********out*********%v\n",out)
+
 	metrics, err := e.parser.Parse(out)
 	if err != nil {
 		acc.AddError(err)
@@ -168,7 +168,7 @@ func (e *Exec) ProcessCommand(command string, acc telegraf.Accumulator, wg *sync
 		}
 	}
 
-	fmt.Printf("********metrics*********%+v\n",metrics)
+	//fmt.Printf("********metrics*********%+v\n",metrics)
 	for _, m := range metrics {
 		acc.AddMetric(m)
 	}
