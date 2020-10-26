@@ -84,7 +84,7 @@ func (ac *accumulator) AddMetric(m telegraf.Metric) {
 
 		if strings.Contains(m.Name(),"process") {
 		//if measurement == "ys_process_new" || measurement == "ys_process" {
-			fmt.Printf("********addFields********%+v***\n", )
+			fmt.Printf("********addFields********%+v***\n", m)
 		}
 		ac.metrics <- m
 	}
