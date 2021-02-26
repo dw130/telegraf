@@ -111,6 +111,12 @@ func (s *HttpServer) Metric(w http.ResponseWriter, r *http.Request, ps httproute
 		tagS = fmt.Sprintf("%s%s",tagS,th)
     }
 
+    bt := ps.ByName("bt")
+    if bt != "" {
+    	tags["ObjectType"] = bt
+		tagS = fmt.Sprintf("%s%s",tagS,th)
+    }
+    
     name := ps.ByName("name")
     if name != "" {
     	tags["midd_instance"] = name
@@ -191,6 +197,8 @@ func init() {
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/Name/:name", t.Metric)
 		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/sevice_name/:ss/thread_index/:ti", t.Metric)
+		router.POST("/metrics/job/monitor/region_name/:region/app_name/:app/app_id/:appid/ObjectType/:bt", t.Metric)
+		///metrics/job/monitor/region_name/1.0_yace/app_name/gameserver/app_id/533.2.243.1/ObjectType/Config
 		go http.ListenAndServe(":9777", router)
 
 		return t
